@@ -32,6 +32,10 @@ module Janky
       def jenkins_url
         @build.url
       end
+      
+      def artifacts
+        Yajl.load(@build.artifacts)
+      end
     end
   end
 end

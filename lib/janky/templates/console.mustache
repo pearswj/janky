@@ -1,5 +1,8 @@
 <p>
 <a href="{{ repo_path }}">{{ repo_name }}</a>/<a href="{{ branch_path }}">{{ branch_name }}</a>/<a href="{{ commit_url }}">{{ commit_short_sha }}</a><br />
-<a href="{{ jenkins_url }}">{{ jenkins_url }}</a>
+<a href="{{ jenkins_url }}">{{ jenkins_url }}</a><br />
+{{#artifacts}}
+<a href="{{ url }}">{{ name }}</a>
+{{/artifacts}}
 </p>
 <pre>{{ output }}</pre>

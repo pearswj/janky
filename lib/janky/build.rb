@@ -35,9 +35,9 @@ module Janky
     # green - Boolean indicating build success.
     #
     # Returns nothing or raises an Error for inexistant builds.
-    def self.complete(id, green)
+    def self.complete(id, green, artifacts)
       if build = find_by_id(id)
-        build.complete(green, Time.now)
+        build.complete(green, Time.now, artifacts)
       else
         raise Error, "Unknown build: #{id.inspect}"
       end
@@ -186,7 +186,7 @@ module Janky
     # now   - the Time at which the build completed.
     #
     # Returns nothing or raise an Error for weird transitions.
-    def complete(green, now)
+    def complete(green, now, artifacts)
       if ! started?
         raise Error, "Build #{id} not started"
       elsif completed?
@@ -195,7 +195,8 @@ module Janky
         update_attributes!(
           :green        => green,
           :completed_at => now,
-          :output       => output_remote
+          :output       => output_remote,
+          :artifacts    => Yajl.dump(artifacts)
         )
         Notifier.completed(self)
       end
@@ -225,6 +226,9 @@ module Janky
 
       # The full URL to the Jenkins build page, as a String.
       attr_reader :url
+      
+      # The full URL of any artifacts stored in S3, as a JSON String.
+      attr_reader :artifacts
     end
 
     # URL of this build's web page, served by Janky::App.

@@ -9,7 +9,7 @@ module Janky
         if payload.started?
           Build.start(payload.id, payload.url)
         elsif payload.completed?
-          Build.complete(payload.id, payload.green?)
+          Build.complete(payload.id, payload.green?, payload.artifacts)
         else
           return Rack::Response.new("Bad Request", 400).finish
         end

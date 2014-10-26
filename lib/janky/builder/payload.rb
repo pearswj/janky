@@ -8,12 +8,16 @@ module Janky
         full_url = build["full_url"]
         path = build["url"]
         build_url = full_url || "#{base_url}#{path}"
+        
+        s3_artifacts = build["artifacts"].select { |_,v| v.has_key?("s3") } \
+                       .map { |k,v| {"name" => k, "url" => v["s3"]} }
 
         new(
           build["phase"],
           build["parameters"]["JANKY_ID"],
           build_url,
-          build["status"]
+          build["status"],
+          s3_artifacts
         )
       end
 
@@ -26,14 +30,15 @@ module Janky
         new("FINISHED", id, nil, status)
       end
 
-      def initialize(phase, id, url, status)
+      def initialize(phase, id, url, status, artifacts)
         @phase      = phase
         @id         = id
         @url        = url
         @status     = status
+        @artifacts  = artifacts
       end
 
-      attr_reader :id, :url
+      attr_reader :id, :url, :artifacts
 
       def started?
         @phase == "STARTED"
@@ -58,7 +63,8 @@ module Janky
             :full_url => @url,
             :parameters => {
               "JANKY_ID" => @id
-            }
+            },
+            :artifacts => Hash[@artifacts.map { |a| [a["name"],{"s3" => a["url"]}] }]
           }
         }.to_json
       end
