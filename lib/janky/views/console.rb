@@ -34,7 +34,7 @@ module Janky
       end
       
       def artifacts
-        Yajl.load(@build.artifacts)
+        Yajl.load(@build.artifacts.to_s)
       end
     end
   end
